@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.adminzerdeapp.ui.bastybet.BastyBetFragment"
+        android:label="@string/title1"
+        tools:layout="@layout/fragment_basty_bet" />
+
+    <fragment
+        android:id="@+id/navigation_history"
+        android:name="com.example.adminzerdeapp.ui.zhanakoldanushylar.ZhanaKoldanushylarFragment"
+        android:label="@string/title2"
+        tools:layout="@layout/fragment_zhanakoldanushylar" />
+
+    <fragment
+        android:id="@+id/navigation_statistics"
+        android:name="com.example.adminzerdeapp.ui.report.ReportFragment"
+        android:label="@string/title5"
+        tools:layout="@layout/fragment_baptaular" />
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.example.adminzerdeapp.ui.baptaular.BaptaularFragment"
+        android:label="@string/title4"
+        tools:layout="@layout/fragment_baptaular" />
+</navigation>

@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Zerde App(Admin)</string>
+
+    <string name="title1">Басты бет</string>
+    <string name="title2">Қолданушылар</string>
+    <string name="title3">Сатушылар</string>
+    <string name="title5">Отчет</string>
+    <string name="title4">Баптаулар</string>
+
+    <string name="enter"><u>Кіру</u></string>
+    <string name="register"><u>Тіркелу</u></string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
