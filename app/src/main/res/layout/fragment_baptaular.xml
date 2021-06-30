@@ -120,6 +120,28 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <TextView
+                    android:id="@+id/btnTapsyrystardyKoru"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:text="Тапсырыстар"
+                    android:gravity="center_vertical"
+                    android:textSize="17dp"
+                    android:textColor="@color/black"
+                    android:paddingStart="10dp"
+                    android:backgroundTint="@color/white" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
                     android:id="@+id/btnAboutProject"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"

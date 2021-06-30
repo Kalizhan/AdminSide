@@ -8,10 +8,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.adminzerdeapp.R;
@@ -40,6 +42,8 @@ public class FirstRegistrationUsersFragment extends Fragment {
     DatabaseReference mDatabaseReference;
     Query query;
 
+    LinearLayout newMembers;
+
 
 
     @Override
@@ -48,6 +52,7 @@ public class FirstRegistrationUsersFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_first_registration_users, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerFirst);
+        newMembers = view.findViewById(R.id.newMembers);
         usersArrayList = new ArrayList<>();
 
         mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -56,6 +61,7 @@ public class FirstRegistrationUsersFragment extends Fragment {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setTitle("Мәліметтер оқылуда...");
         progressDialog.setMessage("Күте тұрыңыз");
+        progressDialog.setCancelable(false);
 
         getData();
 
@@ -63,6 +69,23 @@ public class FirstRegistrationUsersFragment extends Fragment {
         recyclerView.setAdapter(firstUsersListAdapter);
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
+
+//        new CountDownTimer(5000, 1000){
+//
+//            @Override
+//            public void onTick(long millisUntilFinished) {
+//
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                if (usersArrayList.isEmpty()){
+//                    Toast.makeText(getContext(), "Байланысты тексеріңіз", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        }.start();
+
+        setRetainInstance(true);
         return view;
     }
 
@@ -72,15 +95,9 @@ public class FirstRegistrationUsersFragment extends Fragment {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                usersArrayList.clear();
                 if (snapshot.exists()) {
-
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString("quantity", String.valueOf(snapshot.getChildrenCount()));
-//
-//                    ZhanaKoldanushylarFragment fragobj = new ZhanaKoldanushylarFragment();
-//                    fragobj.setArguments(bundle);
-
-                    usersArrayList.clear();
+                    newMembers.setVisibility(View.GONE);
                     for (DataSnapshot snap : snapshot.getChildren()) {
                         Users users = snap.getValue(Users.class);
                         usersArrayList.add(users);
@@ -88,6 +105,7 @@ public class FirstRegistrationUsersFragment extends Fragment {
                     }
                     firstUsersListAdapter.notifyDataSetChanged();
                 }else {
+                    newMembers.setVisibility(View.VISIBLE);
 //                    Toast.makeText(getActivity(), "Мәліметтер жоқ1", Toast.LENGTH_SHORT).show();
                     usersArrayList.clear();
                     progressDialog.dismiss();

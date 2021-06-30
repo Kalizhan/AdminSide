@@ -27,6 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:paddingHorizontal="35dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -74,9 +75,18 @@
                 android:id="@+id/etTovarPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:hint="Тауар бағасы"
                 android:maxLines="1"
                 android:inputType="number"
+                android:textSize="16dp" />
+
+            <EditText
+                android:id="@+id/etDopInfo"
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:hint="Тауар туралы қосымша мәлімет"
+                android:inputType="text"
                 android:textSize="16dp" />
         </LinearLayout>
 

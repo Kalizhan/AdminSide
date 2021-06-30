@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.bastybet.BastyBetFragment">
 
     <LinearLayout
@@ -36,7 +37,7 @@
                 android:layout_width="29dp"
                 android:layout_height="29dp"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/filter" />
+                android:src="@drawable/group" />
 
         </RelativeLayout>
 
@@ -71,13 +72,43 @@
                     android:layout_weight="1"
                     android:layout_marginHorizontal="40dp"/>
             </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_marginTop="20dp"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/recyclerBastyBet"
-                tools:listitem="@layout/list_view_tovar"/>
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/recyclerBastyBet"
+                    tools:listitem="@layout/list_view_tovar"/>
+
+                <LinearLayout
+                    android:id="@+id/bastyBet"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:gravity="center"
+                        android:textSize="32dp"
+                        app:srcCompat="@drawable/home" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Тауар енгізіңіз"
+                        android:textSize="20dp" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
 
         </LinearLayout>
     </LinearLayout>

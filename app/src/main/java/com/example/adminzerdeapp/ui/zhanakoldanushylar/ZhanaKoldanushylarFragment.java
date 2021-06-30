@@ -41,7 +41,10 @@ public class ZhanaKoldanushylarFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_zhanakoldanushylar, container, false);
 
+        setRetainInstance(true);
+
         viewPager = view.findViewById(R.id.viewPager);
+        viewPager.setOffscreenPageLimit(3);
         tabLayout = view.findViewById(R.id.tabLayout);
         mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
         query1 = mDatabaseReference.orderByChild("ruqsat").equalTo("no");
@@ -79,7 +82,7 @@ public class ZhanaKoldanushylarFragment extends Fragment {
     public void addFragments(ViewPager viewPager){
         SectionPagerAdapters adapters = new SectionPagerAdapters(getChildFragmentManager());
 
-        adapters.addFragment(new FirstRegistrationUsersFragment(), "Жаңа");
+        adapters.addFragment(new FirstRegistrationUsersFragment(), "Жаңа қолданушылар");
         adapters.addFragment(new ConstantUsersFragment(), "Сатып алушылар");
         adapters.addFragment(new SatushylarFragment(), "Сатушылар");
         viewPager.setAdapter(adapters);
@@ -87,49 +90,6 @@ public class ZhanaKoldanushylarFragment extends Fragment {
 
     private void setUpViewPager(ViewPager viewPager) {
         addFragments(viewPager);
-
-//        query1.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot.exists()) {
-//                    quantity1 = Integer.parseInt(String.valueOf(snapshot.getChildrenCount()));
-//                    addFragments(viewPager);
-//                    //Log.i("log", "users" + quantity1 + " " + quantity2);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//
-//        query2.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot.exists()) {
-//                    quantity2 = Integer.parseInt(String.valueOf(snapshot.getChildrenCount()));
-////                    adapters.notifyDataSetChanged();
-//                    Log.i("zhana", "users " + quantity2 + " " + snapshot.getChildrenCount());
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-
-//
-//        SectionPagerAdapters adapters = new SectionPagerAdapters(getChildFragmentManager());
-//
-//        //Log.i("log", "users" + quantity1 + " " + quantity2);
-//        adapters.addFragment(new FirstRegistrationUsersFragment(), "Жаңа " + quantity1);
-//        adapters.addFragment(new ConstantUsersFragment(), "Тұрақты " + quantity2);
-//        adapters.addFragment(new SatushylarFragment(), "Сатушылар");
-//
-//        viewPager.setAdapter(adapters);
     }
 
 }

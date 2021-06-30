@@ -17,9 +17,11 @@ import com.example.adminzerdeapp.modules.Users;
 import com.example.adminzerdeapp.ui.zhanakoldanushylar.FirstRegistration.FirstRegistrationUsersFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -56,7 +58,7 @@ public class FirstUsersListAdapter extends RecyclerView.Adapter<FirstUsersListAd
         holder.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                databaseReference.addValueEventListener(new ValueEventListener() {
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot snap : snapshot.getChildren()) {
@@ -72,12 +74,27 @@ public class FirstUsersListAdapter extends RecyclerView.Adapter<FirstUsersListAd
                                         mAuth.createUserWithEmailAndPassword(users.getEmail(), users.getPassword()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                             @Override
                                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                                mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        Toast.makeText(context, "Енгізілді", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
+                                                if (task.isSuccessful()){
+                                                    databaseReference.child(userEmail).child("userId").setValue(FirebaseAuth.getInstance().getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void unused) {
+                                                            mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                    Toast.makeText(context, "Енгізілді", Toast.LENGTH_SHORT).show();
+                                                                    notifyItemChanged(position);
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                if (e instanceof FirebaseAuthUserCollisionException){
+                                                    Toast.makeText(context, "Email қолданыста!", Toast.LENGTH_SHORT).show();
+                                                }
                                             }
                                         });
                                     }
@@ -103,6 +120,7 @@ public class FirstUsersListAdapter extends RecyclerView.Adapter<FirstUsersListAd
                             Users users2 = appleSnapshot.getValue(Users.class);
                             if (holder.email.getText().toString().equals(users2.getEmail())) {
                                 appleSnapshot.getRef().removeValue();
+                                notifyItemRemoved(position);
                             }
                         }
                     }

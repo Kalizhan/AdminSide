@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,6 +80,8 @@ public class ConstantUsersFragment extends Fragment {
         recyclerView.setAdapter(constantUsersAdapter);
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
+
+        setRetainInstance(true);
 
 //        fab.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -169,9 +172,10 @@ public class ConstantUsersFragment extends Fragment {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                usersArrayList.clear();
                 if (snapshot.exists()) {
                     Log.i("gogo", "123 " + snapshot.getChildrenCount());
-                    usersArrayList.clear();
+
                     for (DataSnapshot snap : snapshot.getChildren()) {
                         Users users = snap.getValue(Users.class);
                         usersArrayList.add(users);
@@ -180,7 +184,7 @@ public class ConstantUsersFragment extends Fragment {
 
                     constantUsersAdapter.notifyDataSetChanged();
                 }else {
-                    Toast.makeText(getActivity(), "Мәліметтер жоқ2", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Мәліметтер жоқ", Toast.LENGTH_SHORT).show();
                     usersArrayList.clear();
                     progressDialog.dismiss();
                 }

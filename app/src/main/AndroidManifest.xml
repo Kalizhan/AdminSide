@@ -13,7 +13,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".TovarActivity" android:parentActivityName=".MainActivity" android:theme="@style/AppTheme" android:label=""></activity>
+        <activity android:name=".TapsyrystarActivity"
+            android:theme="@style/AppTheme"
+            android:label="Тапсырыстар"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".ZakazWindowActivity"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".TovarActivity"
+            android:label=""
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

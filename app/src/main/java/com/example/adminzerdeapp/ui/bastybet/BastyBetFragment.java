@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -45,8 +47,12 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.TimeZone;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -68,11 +74,13 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri imgUri;
-    EditText etTovarName, etTovarPrice, etTovarQuantity, etTovarCode;
+    EditText etTovarName, etTovarPrice, etTovarQuantity, etTovarCode, etDopInfo;
 
     ArrayList<Uri> uri;
     RecyclerView recyclerView1;
     HorizontalRecyclerViewAdapter horizontalRecyclerViewAdapter;
+
+    LinearLayout bastyBet;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,6 +91,7 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
         searchView = view.findViewById(R.id.searchView);
         btnAddTovar = view.findViewById(R.id.btnAddTovar);
         recyclerView = view.findViewById(R.id.recyclerBastyBet);
+        bastyBet = view.findViewById(R.id.bastyBet);
         tovarArrayList = new ArrayList<>();
 
 
@@ -92,6 +101,7 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setTitle("Мәліметтер оқылуда...");
         progressDialog.setMessage("Күте тұрыңыз");
+        progressDialog.setCancelable(false);
 
         getData();
 
@@ -99,6 +109,21 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
         recyclerView.setAdapter(tovarListAdapter);
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
+
+        new CountDownTimer(5000, 1000){
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                if (tovarArrayList.isEmpty()){
+                    Toast.makeText(getContext(), "Байланысты тексеріңіз", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }.start();
 
         imgFilterView.setOnClickListener(this);
         btnAddTovar.setOnClickListener(this);
@@ -144,6 +169,7 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
+                    bastyBet.setVisibility(View.GONE);
                     tovarArrayList.clear();
                     for (DataSnapshot snap : snapshot.getChildren()) {
                         progressDialog.cancel();
@@ -154,7 +180,7 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
                     tovarListAdapter.notifyDataSetChanged();
                     searchData();
                 }else {
-                    Toast.makeText(getActivity(), "Бос", Toast.LENGTH_LONG).show();
+                    bastyBet.setVisibility(View.VISIBLE);
                     progressDialog.cancel();
                 }
             }
@@ -186,7 +212,8 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
                                 tovarListAdapter.notifyDataSetChanged();
                                 break;
                             case R.id.new_sort:
-                                Toast.makeText(getContext(), "New Sort", Toast.LENGTH_SHORT).show();
+                                Collections.sort(tovarArrayList, Tovar.tovarDateComparator);
+                                tovarListAdapter.notifyDataSetChanged();
                                 break;
                             case R.id.sale_sort:
                                 Collections.sort(tovarArrayList, Tovar.tovarSatylym);
@@ -221,6 +248,7 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
                 etTovarPrice = dialogView.findViewById(R.id.etTovarPrice);
                 etTovarQuantity = dialogView.findViewById(R.id.etTovarQuantity);
                 etTovarCode = dialogView.findViewById(R.id.etTovarCode);
+                etDopInfo = dialogView.findViewById(R.id.etDopInfo);
 
                 btnAddNewTovar = dialogView.findViewById(R.id.btnAddNewTovar);
 
@@ -244,7 +272,6 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
                             return;
                         }
 
-
                         uploadFile2();
                     }
                 });
@@ -256,141 +283,10 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private String getFileExtension(Uri uri) {
-        ContentResolver cR = getContext().getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
-    }
-
-//    private void uploadFile() {
-//        if (uri != null && uri.size() != 0) {
-//            //Uri[] newUri = new Uri[uri.size()];
-//            for (int i = 0; i < uri.size(); i++) {
-//                Uri IndividualImage = uri.get(i);
-//                final StorageReference fileReference = mstorageReference.child("Images" + IndividualImage.getLastPathSegment());
-////                newUri[i] = Uri.parse("file://" + uri.get(i).getPath());
-//                ArrayList urlStrings = new ArrayList<>();
-////                StorageReference fileReference = mstorageReference.child(newUri[i].getLastPathSegment());
-//
-//                ProgressDialog progressDialog1 = new ProgressDialog(getContext());
-//                progressDialog1.setTitle("Енгізілуде...");
-//                progressDialog1.show();
-//
-//                fileReference.putFile(IndividualImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                    @Override
-//                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//
-//                        fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                            @Override
-//                            public void onSuccess(Uri uri3) {
-////                                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-//                                String tovarCode = etTovarCode.getText().toString();
-//                                urlStrings.add(String.valueOf(uri3));
-//
-////                                HashMap<String, String> hashMap = new HashMap<>();
-//
-//                                TovarImageFolder tovarImageFolder = null;
-//                                for (int i = 0; i < urlStrings.size(); i++) {
-////                                    hashMap.put("ImgLink", String.valueOf(urlStrings.get(i)));
-//                                    tovarImageFolder = new TovarImageFolder(String.valueOf(urlStrings.get(i)), tovarCode);
-//                                }
-////                                hashMap.put("tovarCode", tovarCode);
-////                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("TovarImages");
-//
-//                                tovarImageReference.child(tovarCode).push().setValue(tovarImageFolder)
-//                                        .addOnCompleteListener(
-//                                                new OnCompleteListener<Void>() {
-//                                                    @Override
-//                                                    public void onComplete(@NonNull Task<Void> task) {
-//                                                        if (task.isSuccessful()) {
-////                                                            Tovar tovar = new Tovar(etTovarName.getText().toString(), etTovarCode.getText().toString(), Long.parseLong(etTovarPrice.getText().toString()), Integer.parseInt(etTovarQuantity.getText().toString()));
-//
-////                                                            mDatabaseReference.child(tovarCode).setValue(tovar);
-//                                                            Toast.makeText(getContext(), "Тауар енгізілді!", Toast.LENGTH_SHORT).show();
-//                                                        }
-//                                                    }
-//                                                }
-//                                        ).addOnFailureListener(new OnFailureListener() {
-//                                    @Override
-//                                    public void onFailure(@NonNull Exception e) {
-//                                        Toast.makeText(getContext(), "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                                    }
-//                                });
-//
-//
-//                                progressDialog1.dismiss();
-//                            }
-//                        });
-//
-//                    }
-//                }).addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        progressDialog1.dismiss();
-//                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                })
-//                        .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-//                            @Override
-//                            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-//                                double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-//                                progressDialog1.setMessage("Енгізілді " + (int) progress + "%");
-//                            }
-//                        });
-//            }
-//
-////            fileReference.putFile(imgUri)
-////                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-////                        @Override
-////                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-////                            Handler handler = new Handler();
-////                            handler.postDelayed(new Runnable() {
-////                                @Override
-////                                public void run() {
-////                                    progressDialog1.dismiss();
-////                                }
-////                            }, 500);
-////
-////                            fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-////                                @Override
-////                                public void onSuccess(Uri uri) {
-////                                    String imgUrl = ""+uri;
-////                                    //Toast.makeText(getContext(), "Сурет енгізілді", Toast.LENGTH_SHORT).show();
-////                                    Tovar tovar = new Tovar(etTovarName.getText().toString(), etTovarCode.getText().toString(), Long.parseLong(etTovarPrice.getText().toString()),
-////                                            imgUrl, Integer.parseInt(etTovarQuantity.getText().toString()));
-////                                    String tovarname = etTovarName.getText().toString();
-////                                    mDatabaseReference.child(tovarname).setValue(tovar);
-////                                    Toast.makeText(getContext(), "Тауар енгізілді!", Toast.LENGTH_SHORT).show();
-////                                }
-////                            });
-////                        }
-////                    })
-////                    .addOnFailureListener(new OnFailureListener() {
-////                        @Override
-////                        public void onFailure(@NonNull Exception e) {
-////                            progressDialog1.dismiss();
-////                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-////                        }
-////                    })
-////                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-////                        @Override
-////                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-////                            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-////                            progressDialog1.setMessage("Енгізілді " + (int)progress + "%");
-////                        }
-////                    });
-//        } else {
-//            Toast.makeText(getContext(), "Суретті таңдаңыз!", Toast.LENGTH_SHORT).show();
-//        }
-//
-//    }
-
     ProgressDialog progressDialog1;
     ArrayList<String> urlStrings;
 
     private void uploadFile2() {
-        Log.i("images_uri", "uri.size() " + uri.size());
-
         progressDialog1 = new ProgressDialog(getContext());
         progressDialog1.setTitle("Енгізілуде...");
         progressDialog1.show();
@@ -410,8 +306,6 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
                             @Override
                             public void onSuccess(Uri uri3) {
                                 urlStrings.add(String.valueOf(uri3));
-//                                Log.i("images_uri", "urlStrings.size(): " + urlStrings.size());
-//                                Log.i("images_uri", "uri.size(): " + uri.size());
 
                                 if (urlStrings.size() == uri.size()) {
                                     addData();
@@ -437,24 +331,25 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
         } else {
             Toast.makeText(getContext(), "Суретті таңдаңыз!", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     public void addData() {
-        //Log.i("images_uri", "add Data");
         String imageUris = "";
 
         for (int i = 0; i < urlStrings.size(); i++) {
             imageUris = imageUris + urlStrings.get(i) + ",";
         }
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy/HH:mm:ss");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+6"));
+        Date today = Calendar.getInstance().getTime();
 
         Tovar tovar = new Tovar(
                 etTovarName.getText().toString(),
                 etTovarCode.getText().toString(),
                 imageUris,
                 Long.parseLong(etTovarPrice.getText().toString()),
-                Integer.parseInt(etTovarQuantity.getText().toString()), 0);
+                Integer.parseInt(etTovarQuantity.getText().toString()), 0, dateFormat.format(today), etDopInfo.getText().toString());
 
         String tovarCode = etTovarCode.getText().toString();
 
@@ -482,7 +377,6 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
                         Log.i("count", "123 " + count);
                     }
                 } else if (data.getData() != null) {
-                    //String imagePath = data.getData().getPath();
                     imgUri = data.getData();
                     uri.add(imgUri);
                 }
@@ -490,5 +384,4 @@ public class BastyBetFragment extends Fragment implements View.OnClickListener {
             }
         }
     }
-
 }

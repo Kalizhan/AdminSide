@@ -2,6 +2,7 @@ package com.example.adminzerdeapp.ui.zhanakoldanushylar.Satushylar;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -66,7 +68,7 @@ public class SatushylarFragment extends Fragment {
         fab = view.findViewById(R.id.floatingBtn);
         satushylarArrayList = new ArrayList<Satushylar>();
 
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("Users").child("Satushylar");
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("Satushylar");
         mFirebaseAuth = FirebaseAuth.getInstance();
 
         progressDialog = new ProgressDialog(getContext());
@@ -94,7 +96,6 @@ public class SatushylarFragment extends Fragment {
                 etPasswordSatushy = dialogView.findViewById(R.id.etPasswordSatushy);
                 etPhoneNumberSatushy = dialogView.findViewById(R.id.etPhoneNumberSatushy);
                 btnAdd = dialogView.findViewById(R.id.btnAddSatushy);
-
 
 
                 btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -152,7 +153,7 @@ public class SatushylarFragment extends Fragment {
                             public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
                                 boolean check = !task.getResult().getSignInMethods().isEmpty();
 
-                                if (!check){
+                                if (task.isSuccessful()){
                                     mFirebaseAuth.createUserWithEmailAndPassword(etEmailSatushy.getText().toString(), etPasswordSatushy.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                         @Override
                                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -169,13 +170,12 @@ public class SatushylarFragment extends Fragment {
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            progressDialog.cancel();
-                                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            if (e instanceof FirebaseAuthUserCollisionException){
+                                                progressDialog.cancel();
+                                                Toast.makeText(getContext(), "Email қолданыста!", Toast.LENGTH_SHORT).show();
+                                            }
                                         }
                                     });
-                                }else{
-                                    progressDialog.cancel();
-                                    Toast.makeText(getContext(), "Email тіркелген!", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -205,9 +205,8 @@ public class SatushylarFragment extends Fragment {
         mDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                satushylarArrayList.clear();
                 if (snapshot.exists()) {
-
-                    satushylarArrayList.clear();
                     for (DataSnapshot snap : snapshot.getChildren()) {
                         Satushylar satushylar = snap.getValue(Satushylar.class);
                         satushylarArrayList.add(satushylar);
@@ -216,7 +215,7 @@ public class SatushylarFragment extends Fragment {
 
                     satushylarAdapter.notifyDataSetChanged();
                 }else {
-                    Toast.makeText(getActivity(), "Мәліметтер жоқ3", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Мәліметтер жоқ", Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                 }
             }
